@@ -27,4 +27,6 @@ public class RestaurantInDTO {
     @DateTimeFormat(pattern = "YYYY-MM-DD")
     @JsonSerialize(using = LocalDateSerializer.class)
     private final LocalDate foundationDate;
+
+    private final String address;
 }

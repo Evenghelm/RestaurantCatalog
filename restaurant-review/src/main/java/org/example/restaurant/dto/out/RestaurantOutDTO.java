@@ -25,4 +25,5 @@ public class RestaurantOutDTO {
     private final LocalDate foundationDate;
     private final String telephoneNumber;
     private final List<ReviewOutDTO> reviews;
+    private final String address;
 }

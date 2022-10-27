@@ -41,3 +41,21 @@ databaseChangeLog:
         changes:
           - sqlFile:
               path: \db\changelog\change_sets\food_type_fk.sql
+    - changeSet:
+        id: 8
+        author: arthur.shushkov
+        changes:
+            - sqlFile:
+                  path: \db\changelog\change_sets\add_address_to_restaurant.sql
+    - changeSet:
+          id: 9
+          author: arthur.shushkov
+          changes:
+              - sqlFile:
+                    path: \db\changelog\change_sets\creater_restaurant_food_type.sql
+    - changeSet:
+          id: 10
+          author: arthur.shushkov
+          changes:
+              - sqlFile:
+                    path: \db\changelog\change_sets\drop_restaurant_fk.sql

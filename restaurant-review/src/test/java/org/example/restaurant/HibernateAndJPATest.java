@@ -227,7 +227,7 @@ public class HibernateAndJPATest extends AppContextTest {
         FoodTypeEntity foodTypeEntity = new FoodTypeEntity();
         foodTypeEntity.setName("test 7");
         foodTypeEntity.setDescription("test 7");
-        restaurantEntity.setFoodType(foodTypeEntity);
+        //restaurantEntity.setFoodTypes(Sets.set(foodTypeEntity));
 
         /*
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
@@ -243,5 +243,44 @@ public class HibernateAndJPATest extends AppContextTest {
          */
     }
 
+    @Autowired
+    private RestaurantFoodTypeRepository restaurantFoodTypeRepository;
+    @Test
+    @Transactional
+    public void test8() {
+        FoodTypeEntity jap = new FoodTypeEntity();
+        jap.setName("Японская");
+        jap.setDescription("Описание");
+        foodTypeRepository.save(jap);
+
+        FoodTypeEntity eur = new FoodTypeEntity();
+        eur.setName("Европейская");
+        eur.setDescription("Описание");
+        foodTypeRepository.save(eur);
+
+        RestaurantEntity restaurant = new RestaurantEntity();
+        restaurant.setName("Якитория");
+        restaurant.setAddress("test");
+        restaurantRepository.save(restaurant);
+
+        RestaurantFoodTypeEntity rft1 = new RestaurantFoodTypeEntity();
+        rft1.setRestaurant(restaurant);
+        rft1.setFoodType(jap);
+        rft1.setMainFoodType(true);
+        restaurantFoodTypeRepository.save(rft1);
+
+        RestaurantFoodTypeEntity rft2 = new RestaurantFoodTypeEntity();
+        rft2.setRestaurant(restaurant);
+        rft2.setFoodType(eur);
+        restaurantFoodTypeRepository.save(rft2);
+
+        String mainFoodTypeName = "";
+        for (var e : restaurant.getRestaurantFoodTypes()) {
+            if (e.isMainFoodType()) {
+                mainFoodTypeName = e.getFoodType().getName();
+            }
+        }
+        assertEquals("Японская", mainFoodTypeName);
+    }
 
 }

@@ -1,0 +1,1 @@
+alter table RESTAURANT drop column FOOD_TYPE_ID;

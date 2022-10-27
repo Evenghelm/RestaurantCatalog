@@ -5,8 +5,10 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,11 +32,14 @@ public class RestaurantEntity {
             , fetch = FetchType.LAZY)
     private List<ReviewEntity> reviews;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="food_type_id")
-    private FoodTypeEntity foodType;
+    @OneToMany(mappedBy = "foodType"
+            , fetch = FetchType.LAZY)
+    private Set<RestaurantFoodTypeEntity> restaurantFoodTypes = new HashSet();
     @Basic
     private LocalDate foundationDate;
+
+    @Basic
+    private String address;
 
     public RestaurantEntity() {
 
