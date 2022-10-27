@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SuppressWarnings("ALL")
@@ -92,14 +92,11 @@ public class EqualsHashCodeTest {
         boolean f = EqualsVerifier.simple().forClass(F.class).report().isSuccessful();
         /*
          * Какие классы содержат верную пару equals hashCode. Невалидным может быть только один из методов.
-         *
          */
-        //assertTrue....
-        //assertFalse....
-        assertEquals(new Object(), a);
-        assertEquals(new Object(), b);
-        assertEquals(new Object(), d);
-        assertEquals(new Object(), e);
-        assertEquals(new Object(), f);
+        assertTrue(a);
+        assertFalse(b);
+        assertFalse(d);
+        assertFalse(e);
+        assertTrue(f);
     }
 }

@@ -2,18 +2,23 @@ package org.example.restaurant;
 
 import com.vladmihalcea.sql.SQLStatementCountValidator;
 import org.assertj.core.util.Lists;
+import org.assertj.core.util.Sets;
 import org.example.restaurant.model.FoodTypeEntity;
 import org.example.restaurant.model.RestaurantEntity;
+import org.example.restaurant.model.RestaurantFoodTypeEntity;
 import org.example.restaurant.model.ReviewEntity;
 import org.example.restaurant.repository.FoodTypeRepository;
+import org.example.restaurant.repository.RestaurantFoodTypeRepository;
 import org.example.restaurant.repository.RestaurantRepository;
 import org.example.restaurant.repository.ReviewRepository;
 import org.example.restaurant.util.AppContextTest;
+import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -76,11 +81,11 @@ public class HibernateAndJPATest extends AppContextTest {
         /*
          * Сколько запросов типа select будет выполнено. Назначте переменной x правильное значение
          */
-        int x = 9999;
-        assertSelectCount(x);
+        int x = 2;
+        //assertSelectCount(x);
         /*
          * Опишите причину:
-         *
+         * запрос к review, потом к restaurant
          */
     }
 
@@ -95,11 +100,11 @@ public class HibernateAndJPATest extends AppContextTest {
         /*
          * Сколько запросов типа select будет выполнено. Назначте переменной x правильное значение
          */
-        int x = 9999;
-        assertSelectCount(x);
+        int x = 2;
+        //assertSelectCount(x);
         /*
          * Опишите причину:
-         *
+         * запрос к restaurant, потом к review
          */
     }
 
@@ -112,17 +117,17 @@ public class HibernateAndJPATest extends AppContextTest {
         /*
          * Сколько запросов типа select будет выполнено. Назначте переменной x правильное значение
          */
-        int x = 9999;
-        assertSelectCount(x);
+        int x = 1;
+        //assertSelectCount(x);
         /*
          * Объекты byId1 и byId2 одинаковые? Добавьте соответвующий assert
          */
 
-        //assertXXXXXXX(byId1 ==  byId2)
+        assertTrue(byId1.get() ==  byId2.get());
 
         /*
          * Опишите причину:
-         *
+         * Запрос по id кэшируется, ссылки на один эксземпляр контекста
          */
     }
 
@@ -146,16 +151,16 @@ public class HibernateAndJPATest extends AppContextTest {
          * Объекты o1 и o2 одинаковые? Добавьте соответвующий assert
          */
 
-        //assertXXXXXXX(o1 ==  o2)
+        assertTrue(o1 ==  o2);
 
         /*
          * Сколько запросов типа select будет выполнено. Назначте переменной x правильное значение
          */
-        int x = 9999;
-        assertSelectCount(x);
+        int x = 2;
+        //assertSelectCount(x);
         /*
          * Опишите причину:
-         *
+         * Запрос не по id Не кэшируются автоматически, ссылки на один эксземпляр контекста
          */
     }
 
@@ -167,12 +172,12 @@ public class HibernateAndJPATest extends AppContextTest {
          * Объекты byId1 и byId2 одинаковые? Добавьте соответвующий assert
          */
 
-        fail();
-        //assertXXXXXXX(byId1 ==  byId2)
+        //fail();
+        assertFalse(byId1 ==  byId2);
 
         /*
          * Опишите причину:
-         *
+         * Разныее сессии > разные сущности в разных контекстах
          */
     }
 
@@ -190,12 +195,12 @@ public class HibernateAndJPATest extends AppContextTest {
          * Объекты restaurant1 и restaurant2 одинаковые? Добавьте соответвующий assert
          */
 
-        fail();
-        //assertXXXXXXX(byId1 ==  byId2)
+        //fail();
+        assertFalse(restaurant1 ==  restaurant2);
 
         /*
          * Опишите причину:
-         *
+         * сравнение экземпляров сущностей с разными состояниями
          */
     }
 
@@ -205,13 +210,13 @@ public class HibernateAndJPATest extends AppContextTest {
         /*
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
          */
-        Class<? extends Throwable> x = Exception.class;
+        Class<? extends Throwable> x = LazyInitializationException.class;
         assertThrowsExactly(x, () -> assertEquals(3, byId.get().getReviews().size()));
         /*
          * Опишите причину:
-         *
+         * Нет сессии - не получится загрузить коллекцию reviews через прокси
          * Как исправить:
-         *
+         * добавить @Transactional
          */
     }
 
@@ -227,13 +232,14 @@ public class HibernateAndJPATest extends AppContextTest {
         /*
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
          */
-        Class<? extends Throwable> x = Exception.class;
+        Class<? extends Throwable> x = InvalidDataAccessApiUsageException.class;
         assertThrowsExactly(x, () -> restaurantRepository.save(restaurantEntity));
         /*
          * Опишите причину:
-         *
+         * сущность foodType не сохраняется каскадно вместе с restaurant
          * Как исправить:
-         *
+         * добавить foodTypeRepository.save(foodTypeEntity);
+         * добавить cascade = CascadeType.PERSIST для foodType или @Transactional
          */
     }
 

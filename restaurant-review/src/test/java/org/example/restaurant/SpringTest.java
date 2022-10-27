@@ -7,6 +7,8 @@ import org.example.restaurant.model.RestaurantEntity;
 import org.example.restaurant.repository.RestaurantRepository;
 import org.example.restaurant.service.Service;
 import org.example.restaurant.service.ServiceForTest;
+import org.example.restaurant.service.impl.SampleBeanA;
+import org.example.restaurant.service.impl.StringReader;
 import org.example.restaurant.util.AppContextTest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -32,13 +34,14 @@ public class SpringTest extends AppContextTest {
          * Какой тип объектов.
          * Подставьте правильное значение в переменные x и y
          */
-        Class<?> x = SpringTest.class;
-        Class<?> y = SpringTest.class;
+        Class<?> x = StringReader.class;
+        Class<?> y = SampleBeanA.class;
         assertInstanceOf(x, service.getObjectReader());
         assertInstanceOf(y, service.getSampleBean());
         /*
          * Опишите причину:
-         *
+         * коллизию для ObjectReader разрешает профиль,
+         * для SampleBean - квалификатор
          */
     }
 
@@ -62,13 +65,13 @@ public class SpringTest extends AppContextTest {
          * Добавьте соответствующие assert
          */
 
-        fail();
-        //assertXXXXXXX(a == b.getA());
-        //assertXXXXX(b.getA() == c.getA());
+        //fail();
+        assertFalse(a == b.getA());
+        assertFalse(b.getA() == c.getA());
 
         /*
          * Опишите причину:
-         *
+         * разные экземпляры бинов (prototype scope)
          */
         test2_1_finish = true;
     }
@@ -82,13 +85,13 @@ public class SpringTest extends AppContextTest {
          */
 
         if(test2_1_finish) {
-            int x = 9999, y = 9999, z = 9999, w = 9999;
+            int x = 6, y = 0, z = 2, w = 1;
             assertEquals(x, A.postConstructCount.get());
             assertEquals(y, A.preDestroyCount.get());
             assertEquals(z, B.postConstructCount.get());
             assertEquals(w, B.preDestroyCount.get());
         } else {
-            int x = 9999, y = 9999, z = 9999, w = 9999;
+            int x = 3, y = 0, z = 1, w = 0;
             assertEquals(x, A.postConstructCount.get());
             assertEquals(y, A.preDestroyCount.get());
             assertEquals(z, B.postConstructCount.get());
@@ -96,9 +99,9 @@ public class SpringTest extends AppContextTest {
         }
         /*
          * Опишите причину:
-         *
+         * при test2_1_finish кол-во созданий в 2 раза больше из-за сброса контекста
          * На что влияет @DirtiesContext?:
-         *
+         * Очистка контекста после выполнения грязного действия > вызов destroy() для singleton бинов
          */
     }
 
@@ -119,8 +122,8 @@ public class SpringTest extends AppContextTest {
          * Будет ли сохранен test8 в методе test8?
          * Добавьте соответствующий assert
          */
-        fail();
-        // assertXXXXXXX(byId);
+        //fail();
+        assertNotNull(byId); //без Transactional операция не откатится
     }
     @Test
     public void test9() {
@@ -135,8 +138,8 @@ public class SpringTest extends AppContextTest {
          * Будет ли сохранен test9 в методе test8?
          * Добавьте соответствующий assert
          */
-        fail();
-        // assertXXXXXXX(byId);
+        //fail();
+        assertNotNull(byId); //через прокси не получится откатить результат вложенного метода
     }
     @Test
     public void test10() {
@@ -150,7 +153,7 @@ public class SpringTest extends AppContextTest {
          * Будет ли изменен test10 в методе test10?
          * Присвойте перенной x нужное значение
          */
-        String x = "not valid string";
+        String x = "test10Updated";
         assertEquals(x, byId.get().getName());
     }
 
@@ -170,7 +173,7 @@ public class SpringTest extends AppContextTest {
          * Будет ли изменен test11 в методе test11?
          * Присвойте перенной x нужное значение
          */
-        String x = "not valid string";
+        String x = "test11";
         assertEquals(x, byId.get().getName());
     }
 }

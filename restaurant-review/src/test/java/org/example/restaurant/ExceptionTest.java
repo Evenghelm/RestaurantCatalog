@@ -20,7 +20,7 @@ public class ExceptionTest {
         } finally {
             x = 3;
         }
-        assertEquals(0, x);
+        assertEquals(3, x);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class ExceptionTest {
         } catch (Exception e) {
             x = 2;
         }
-        assertEquals(0, x);
+        assertEquals(1, x);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class ExceptionTest {
         } catch (Exception e) {
             x = 2;
         }
-        assertEquals(0, x);
+        assertEquals(2, x);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ExceptionTest {
         } catch (Exception e) {
             x = 2;
         }
-        assertEquals(0, x);
+        assertEquals(1, x);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class ExceptionTest {
         } finally {
             x += 400;
         }
-        assertEquals(0, x);
+        assertEquals(410, x);
     }
 
     String s = "";
@@ -100,6 +100,6 @@ public class ExceptionTest {
         } catch (Exception e) {
             s += "c";
         }
-        assertEquals("xxxx", s);
+        assertEquals("abc", s);
     }
 }

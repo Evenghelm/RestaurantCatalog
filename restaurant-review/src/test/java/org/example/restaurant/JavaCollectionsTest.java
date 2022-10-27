@@ -17,14 +17,14 @@ public class JavaCollectionsTest {
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
          * Если ошибки нет, уберите assertThrowsExactly блок.
          */
-        Class<? extends Throwable> x = Exception.class;
+        Class<? extends Throwable> x = ClassCastException.class;
         assertThrowsExactly(x, () -> {
             set.add(5);
             set.add("aaaa");
         });
         /*
          * Опишите причину:
-         *
+         * Элемены деревьев сравниваются - не получится привести Integer к String
          */
     }
 
@@ -36,13 +36,11 @@ public class JavaCollectionsTest {
          * Если ошибки нет, уберите assertThrowsExactly блок.
          */
         Class<? extends Throwable> x = Exception.class;
-        assertThrowsExactly(x, () -> {
-            set.add(5);
-            set.add("aaaa");
-        });
+        set.add(5);
+        set.add("aaaa");
         /*
          * Опишите причину:
-         *
+         * Оба типа совместимы с Object
          */
     }
 
@@ -53,14 +51,14 @@ public class JavaCollectionsTest {
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
          * Если ошибки нет, уберите assertThrowsExactly блок.
          */
-        Class<? extends Throwable> x = Exception.class;
+        Class<? extends Throwable> x = ClassCastException.class;
         assertThrowsExactly(x, () -> {
             set.add(5.5);
             set.add(6.7f);
         });
         /*
          * Опишите причину:
-         *
+         * Ошибка приведения типов при сравнении Double и Float
          */
     }
     @Test
@@ -70,11 +68,11 @@ public class JavaCollectionsTest {
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
          * Если ошибки нет, уберите assertThrowsExactly блок.
          */
-        Class<? extends Throwable> x = Exception.class;
+        Class<? extends Throwable> x = ClassCastException.class;
         assertThrowsExactly(x, () -> set.add(new ArrayList<>()));
         /*
          * Опишите причину:
-         *
+         * ArrayList не Comparable
          */
     }
 
@@ -85,11 +83,11 @@ public class JavaCollectionsTest {
          * Какая ошибка будет инициирована? Подставьте нужное значение в переменную x
          * Если ошибки нет, уберите assertThrowsExactly блок.
          */
-        Class<? extends Throwable> x = Exception.class;
+        Class<? extends Throwable> x = ClassCastException.class;
         assertThrowsExactly(x, () -> map.put(new ArrayList<Integer>(), "aaa"));
         /*
          * Опишите причину:
-         *
+         * ArrayList не Comparable
          */
     }
 
@@ -103,7 +101,7 @@ public class JavaCollectionsTest {
          * Какой порядок элементов будет в map.
          * Поставьте правильное занчение в arr.
          */
-        String[] arr = new String[]{/**/};
+        String[] arr = new String[]{"c", "a", "b"};
         Collection<String> values = map.values();
         assertArrayEquals(arr, values.toArray());
     }
@@ -118,7 +116,7 @@ public class JavaCollectionsTest {
          * Какой порядок элементов будет в map.
          * Поставьте правильное занчение в arr.
          */
-        String[] arr = new String[]{/**/};
+        String[] arr = new String[]{"a", "b", "c"};
         Collection<String> values = map.values();
         assertArrayEquals(arr, values.toArray());
     }
@@ -155,8 +153,9 @@ public class JavaCollectionsTest {
         /*
          *  Сравните объекты o и "a".
          */
-        fail();
-        //assert*****("a", o);
+        //fail();
+        assertNotEquals("a", o);
+        // по новому ключу не найдем корзину - сранивать строку будем с null
     }
 
     @Test
@@ -166,6 +165,10 @@ public class JavaCollectionsTest {
         /*
          * Удалите элемент 2 с использованием итератора.
          */
+        Iterator<Integer> iterator = integers.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next() == 2) iterator.remove();
+        }
         assertArrayEquals(new Integer[]{1,3}, integers.toArray());
     }
 

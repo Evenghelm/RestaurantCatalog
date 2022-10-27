@@ -2,7 +2,7 @@ package org.example.restaurant;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings({"ParameterCanBeLocal", "unused", "StringOperationCanBeSimplified", "UnusedAssignment"})
 public class JavaCoreTest {
@@ -15,12 +15,12 @@ public class JavaCoreTest {
          * Объекты a и b одинаковые? Добавьте соответвующий assert
          */
 
-        fail();
-        //assertXXXXXXX(a ==  b)
+        //fail();
+        assertTrue(a ==  b);
 
         /*
          * Опишите причину:
-         *
+         * Пул строк
          */
     }
 
@@ -32,12 +32,12 @@ public class JavaCoreTest {
          * Объекты a и b одинаковые? Добавьте соответвующий assert
          */
 
-        fail();
-        //assertXXXXXXX(a ==  b)
+        //fail();
+        assertFalse(a ==  b);
 
         /*
          * Опишите причину:
-         *
+         * Разные ссылки
          */
     }
 
@@ -49,12 +49,12 @@ public class JavaCoreTest {
          * Изменится ли объект a? Добавьте соответвующий assert
          */
 
-        fail();
-        //assertXXXXXXXXX("aaa", a);
+        //fail();
+        assertNotEquals("aaa", a);
 
         /*
          * Опишите причину:
-         *
+         * toLowerCase не изменит оригинал
          */
 
     }
@@ -68,12 +68,12 @@ public class JavaCoreTest {
          * Объекты a и b одинаковые? Добавьте соответвующий assert
          */
 
-        fail();
-        //assertXXXXXXX(a ==  b)
+        //fail();
+        assertFalse(a ==  b);
 
         /*
          * Опишите причину:
-         *
+         * В пул помещаются только числа в диапазоне -128:127 > будут разные объекты
          */
     }
 
@@ -85,8 +85,8 @@ public class JavaCoreTest {
         /*
          * Изменится ли значение переменной b? Добавьте соответвующий assert
          */
-        fail();
-        //assertXXXXXXX(101.0, b);
+        //fail();
+        assertNotEquals(101.0, b);
     }
 
     static class A {
@@ -105,8 +105,8 @@ public class JavaCoreTest {
         /*
          * Изменится ли значение a.a? Добавьте соответвующий assert
          */
-        fail();
-        //assertXXXXXXX(100, a.a);
+        //fail();
+        assertEquals(100, a.a);
     }
 
     private void f2(A a) {
@@ -122,8 +122,8 @@ public class JavaCoreTest {
         /*
          * Изменится ли значение a.a? Добавьте соответвующий assert
          */
-        fail();
-        //assertXXXXXXX(100, a.a);
+        //fail();
+        assertNotEquals(100, a.a);
 
     }
 
@@ -138,12 +138,12 @@ public class JavaCoreTest {
         /*
          * Одинаковое ли значение переменных a1 и a2? Добавьте соответвующий assert
          */
-        fail();
-        //assertXXXXXXX(a1, a2);
+        //fail();
+        assertNotEquals(a1, a2);
 
         /*
          * Опишите причину:
-         *
+         * Потеря точности при сложении
          */
     }
 }
