@@ -23,4 +23,6 @@ public class EmployeeResponseDTO {
     private String email;
     private Long departmentId;
     private BigDecimal salary;
+    private Long userId;
+    private Boolean isUserDeleted;
 }

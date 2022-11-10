@@ -1,5 +1,6 @@
 package org.example.employee.service.impl;
 
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.example.employee.dto.request.EmployeeRequestDTO;
 import org.example.employee.dto.response.EmployeeResponseDTO;
@@ -10,8 +11,12 @@ import org.example.employee.model.EmployeeEntity;
 import org.example.employee.repository.DepartmentRepository;
 import org.example.employee.repository.EmployeeRepository;
 import org.example.employee.service.EmployeeService;
+import org.example.employee.service.UserFeignClient;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -26,18 +31,31 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper mapper;
     private final DepartmentRepository departmentRepository;
+    private final UserFeignClient userFeignClient;
+    private final EntityManager entityManager;
 
-    @Override
-    public EmployeeResponseDTO getEmployeeById(Long id) {
+    public EmployeeEntity getEmployeeEntityById(Long id, boolean showDeleted) {
+        var t = employeeRepository.getEmployeeById(id, showDeleted);
         return Optional.of(id)
-                .flatMap(employeeRepository::getEmployeeById)
-                .map(mapper::toDTO)
+                .flatMap((_id) -> employeeRepository.getEmployeeById(_id, showDeleted))
                 .orElseThrow(() -> new NotFoundRecordException(new Object[]{EMPLOYEE_TABLE, id.toString()}));
     }
 
     @Override
+    public EmployeeResponseDTO getEmployeeById(Long id, boolean showDeleted) {
+        EmployeeEntity employeeEntity = getEmployeeEntityById(id, showDeleted);
+        return mapper.toDTO(employeeEntity);
+    }
+
+    @Override
+    public EmployeeResponseDTO getEmployeeById(Long id) {
+        return getEmployeeById(id, false);
+    }
+
+    @Override
     public List<EmployeeResponseDTO> getEmployees() {
-        return employeeRepository.getEmployees().stream()
+        List<EmployeeEntity> employees = employeeRepository.getEmployees();
+        return employees.stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -68,12 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         updateEmployee.setDepartment(department.get());
 
-        Optional<EmployeeEntity> employeeOp = employeeRepository.findById(request.getId());
-        if (employeeOp.isEmpty()) {
-            throw new NotFoundRecordException(new Object[]{EMPLOYEE_TABLE, request.getId().toString()});
-        }
-
-        EmployeeEntity employeeEntity = employeeOp.get();
+        EmployeeEntity employeeEntity = getEmployeeEntityById(request.getId(), false);
         employeeEntity.setDepartment(updateEmployee.getDepartment());
         employeeEntity.setEmail(updateEmployee.getEmail());
         employeeEntity.setName(updateEmployee.getName());
@@ -84,13 +97,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public void deleteEmployee(Long id) {
-        employeeRepository.findById(id)
-                .ifPresentOrElse(e -> {
-                            departmentRepository.removeChief(id);
-                            employeeRepository.deleteById(id);
-                        },
-                        () -> {
-                            throw new NotFoundRecordException(new Object[]{EMPLOYEE_TABLE, id.toString()});
-                        });
+        EmployeeEntity employeeEntity = getEmployeeEntityById(id, false);
+        departmentRepository.removeChief(id);
+        try {
+            userFeignClient.deleteUser(employeeEntity.getUserId());
+            employeeEntity.setIsUserDeleted(true);
+            employeeRepository.saveAndFlush(employeeEntity);
+        } catch (FeignException fe) {
+            fe.printStackTrace();
+        }
+        employeeRepository.delete(employeeEntity);
     }
 }

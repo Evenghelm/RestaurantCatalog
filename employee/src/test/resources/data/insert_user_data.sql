@@ -1,0 +1,1 @@
+update employee e set user_id = id;

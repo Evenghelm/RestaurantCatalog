@@ -1,17 +1,20 @@
 package org.example.employee.controller;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import org.example.employee.configuration.WireMockConfig;
 import org.example.employee.dto.request.EmployeeRequestDTO;
 import org.example.employee.dto.response.EmployeeResponseDTO;
 import org.example.employee.error.NotFoundRecordException;
+import org.example.employee.service.EmployeeService;
 import org.example.employee.util.AppContextTest;
 import org.example.employee.util.TestUtil;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static net.javacrumbs.jsonunit.spring.JsonUnitResultMatchers.json;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -33,6 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.MethodName.class)
 @Sql(scripts = "/data/insert_test_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig(encoding = "utf-8"))
 @Sql(scripts = "/data/clear_data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, config = @SqlConfig(encoding = "utf-8"))
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ContextConfiguration(classes = {WireMockConfig.class})
 public class EmployeeControllerTest extends AppContextTest {
 
     private static final Locale LOCALE_RU = new Locale("ru", "RU");
@@ -51,6 +57,12 @@ public class EmployeeControllerTest extends AppContextTest {
     private static final String RESPONSE_UPDATE_SUCCESS = BASE_RESPONSE + "employee_update_success.json";
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private WireMockServer mockUserService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Test
     void getEmployeeByIdSuccessTest() throws Exception {
@@ -187,5 +199,28 @@ public class EmployeeControllerTest extends AppContextTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
                 .andExpect(content().json(expected));
+    }
+    @Test
+    @Sql({"/data/insert_test_data.sql", "/data/insert_user_data.sql"})
+    @Sql(scripts = "/data/clear_data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void deleteEmployeeWithUserTest() throws Exception {
+        mockUserService.stubFor(WireMock.delete(WireMock.urlEqualTo("/users/2"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())));
+
+        this.mockMvc.perform(delete("/employees/{id}", 2L));
+        assertThrowsExactly(NotFoundRecordException.class, () -> employeeService.getEmployeeById(2L));
+        assertTrue(employeeService.getEmployeeById(2L, true).getIsUserDeleted());
+    }
+    @Test
+    @Sql({"/data/insert_test_data.sql", "/data/insert_user_data.sql"})
+    @Sql(scripts = "/data/clear_data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void deleteEmployeeWithUserExceptionTest() throws Exception {
+        mockUserService.stubFor(WireMock.delete(WireMock.urlEqualTo("/users/1"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.NOT_FOUND.value())));
+
+        this.mockMvc.perform(delete("/employees/{id}", 1L));
+        assertFalse(employeeService.getEmployeeById(1L, true).getIsUserDeleted());
     }
 }

@@ -20,6 +20,7 @@ public interface EmployeeMapper {
     EmployeeResponseDTO toDTO(EmployeeEntity entity);
 
     @Mapping(target = "department", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     EmployeeEntity toEntity(EmployeeRequestDTO request);
 
     @AfterMapping

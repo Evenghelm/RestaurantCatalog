@@ -24,7 +24,7 @@ public interface DepartmentMapper {
         responseDTO.setChief(
                 Optional.ofNullable(entity)
                         .map(DepartmentEntity::getChief)
-                        .map(x -> new EmployeeResponseDTO(x.getId(), x.getName(), x.getEmail(), null, null))
+                        .map(x -> new EmployeeResponseDTO(x.getId(), x.getName(), x.getEmail(), null, null, null, null))
                         .orElse(null)
         );
     }

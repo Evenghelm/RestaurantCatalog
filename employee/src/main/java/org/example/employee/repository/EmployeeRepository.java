@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Long> {
 
-    @Query("SELECT e FROM EmployeeEntity e JOIN FETCH e.department WHERE e.id = :id")
-    Optional<EmployeeEntity> getEmployeeById(@Param("id") Long id);
+    @Query("SELECT e FROM EmployeeEntity e JOIN FETCH e.department WHERE e.id = :id and e.deleted = :is_deleted")
+    Optional<EmployeeEntity> getEmployeeById(@Param("id") Long id, @Param("is_deleted") boolean isDeleted);
 
-    @Query("SELECT e FROM EmployeeEntity e JOIN FETCH e.department order by e.name")
+    @Query("SELECT e FROM EmployeeEntity e JOIN FETCH e.department where e.deleted = false order by e.name")
     List<EmployeeEntity> getEmployees();
 
 
