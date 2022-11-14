@@ -1,21 +1,16 @@
 package org.example.employee.kafka;
 
 import org.example.Application;
-import org.example.employee.service.impl.EmployeeServiceImpl;
+import org.example.employee.service.EmployeeService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = Application.class)
 @DirtiesContext
@@ -26,7 +21,7 @@ class EmbeddedKafkaIntegrationTest {
     @Autowired
     private KafkaTemplate<String, Long> kafkaTemplate;
     @Autowired
-    EmployeeServiceImpl service;
+    EmployeeService service;
 
     @Test
     public void kafkaTest() throws Exception {

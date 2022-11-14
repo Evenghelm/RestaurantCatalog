@@ -12,7 +12,6 @@ import org.example.employee.repository.DepartmentRepository;
 import org.example.employee.repository.EmployeeRepository;
 import org.example.employee.service.EmployeeService;
 import org.example.employee.service.UserFeignClient;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -108,14 +107,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(employeeEntity);
     }
 
-    @KafkaListener(topics = "userDeleted")
-    public void userDeletionListener(Long userId) {
-        List<EmployeeEntity> employeeEntities = employeeRepository.getEmployeesByUserId(userId);
-        if (employeeEntities != null && employeeEntities.size() > 0) {
-            for (var entity : employeeEntities) {
-                entity.setIsUserDeleted(true);
-                employeeRepository.saveAndFlush(entity);
-            }
-        }
-    }
 }

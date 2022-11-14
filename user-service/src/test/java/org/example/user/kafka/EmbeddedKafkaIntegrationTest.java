@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 class EmbeddedKafkaIntegrationTest {
-
     @Autowired
     private KafkaTemplate producer;
 
@@ -25,7 +24,6 @@ class EmbeddedKafkaIntegrationTest {
     public void userDeletionListener(Long userId) {
         receivedId = userId;
     }
-
 
     @Test
     public void kafkaTest() throws Exception {
