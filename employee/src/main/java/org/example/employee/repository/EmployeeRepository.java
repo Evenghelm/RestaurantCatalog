@@ -17,5 +17,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Long> 
     @Query("SELECT e FROM EmployeeEntity e JOIN FETCH e.department where e.deleted = false order by e.name")
     List<EmployeeEntity> getEmployees();
 
-
+    @Query("SELECT e FROM EmployeeEntity e JOIN FETCH e.department " +
+            "where e.deleted = false and e.userId = :userId order by e.name")
+    List<EmployeeEntity> getEmployeesByUserId(@Param("userId") Long userId);
 }

@@ -6,15 +6,22 @@ import org.example.user.model.User;
 import org.example.user.exception.UserNotFoundException;
 import org.example.user.repository.UserRepository;
 import org.example.user.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+
 import java.util.Set;
 
 @Data
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
 
     @Override
     public Page<User> getUsers(Pageable pageable) {
@@ -49,5 +56,6 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         User user = getUserById(id);
         repository.delete(user);
+        kafkaTemplate.send("userDeleted", id);
     }
 }

@@ -11,3 +11,8 @@ spring:
       ddl-auto: none
   liquibase:
     change-log: classpath:db/changelog/master.xml
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      group-id: user-group-1

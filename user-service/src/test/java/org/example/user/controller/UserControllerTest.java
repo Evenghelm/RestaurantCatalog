@@ -12,9 +12,13 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,6 +32,8 @@ public class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @MockBean
+    private KafkaTemplate<String, Long> kafkaTemplate;
 
     @Test
     void contextLoads() {}
@@ -117,6 +123,7 @@ public class UserControllerTest {
     @Order(4)
     void userDeleteTest() throws Exception {
         this.mockMvc.perform(delete("/users/2")).andExpect(status().isOk());
+        verify(kafkaTemplate, times(1)).send("userDeleted", 2L);
         this.mockMvc.perform(delete("/users/2")).andExpect(status().isNotFound());
     }
 
