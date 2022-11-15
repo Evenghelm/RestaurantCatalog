@@ -10,6 +10,7 @@ import org.example.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -38,14 +39,14 @@ public class UserController {
 
     @PostMapping
     public UserResponseDTO createUser(
-            @RequestBody UserCreateRequestDTO request) {
+            @Validated @RequestBody UserCreateRequestDTO request) {
         User user = service.createUser(mapper.toEntityFromCreateRequestDTO(request));
         return mapper.toDTO(user);
     }
 
     @PutMapping
     public UserResponseDTO updateUser(
-            @RequestBody UserUpdateRequestDTO request) {
+            @Validated @RequestBody UserUpdateRequestDTO request) {
         User user = service.updateUser(mapper.toEntityFromUpdateRequestDTO(request));
         return mapper.toDTO(user);
     }

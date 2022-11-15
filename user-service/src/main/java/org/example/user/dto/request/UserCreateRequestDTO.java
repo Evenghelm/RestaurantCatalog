@@ -12,7 +12,7 @@ public class UserCreateRequestDTO {
     @Size(min = 2, max = 20)
     protected String nickname;
     @NotNull
-    @Email(regexp = ".+[@].+[\\.].+")
+    @Email
     protected String email;
     protected boolean internal;
 }

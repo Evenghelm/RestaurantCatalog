@@ -1,1 +1,1 @@
-update employee e set user_id = id;
+update employee e set user_id = id, is_user_deleted = false;

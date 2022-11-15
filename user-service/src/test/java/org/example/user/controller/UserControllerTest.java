@@ -17,12 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
@@ -37,6 +37,17 @@ public class UserControllerTest {
 
     @Test
     void contextLoads() {}
+
+    @Test
+    @Order(0)
+    public void getUsersTest() throws Exception {
+        mockMvc.perform(get("/users/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.content[*].nickname", hasItems("Enryu", "Urek")))
+                .andExpect(jsonPath("$.pageable.sort.sorted").value(true));
+    }
 
     @Test
     @Order(1)
@@ -130,7 +141,6 @@ public class UserControllerTest {
     @Test
     void nonValidEmailTest() throws Exception {
         UserUpdateRequestDTO updateRequestDto = new UserUpdateRequestDTO();
-        updateRequestDto.setId(1L);
         updateRequestDto.setNickname("asd");
         updateRequestDto.setEmail("non valid email");
         updateRequestDto.setInternal(false);
