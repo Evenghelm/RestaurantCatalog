@@ -16,3 +16,10 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
       group-id: user-group-1
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG

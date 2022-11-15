@@ -22,3 +22,10 @@ spring:
       group-id: user-group-1
     producer:
       value-serializer: org.apache.kafka.common.serialization.LongSerializer
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
