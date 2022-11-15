@@ -8,4 +8,17 @@ spring:
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/master.xml
+    contexts: test-data
+  sql:
+    init:
+      encoding: UTF-8
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      group-id: user-group-1
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.LongSerializer

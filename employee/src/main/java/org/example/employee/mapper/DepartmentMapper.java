@@ -16,6 +16,7 @@ import java.util.Optional;
 public interface DepartmentMapper {
 
     @Mapping(target = "chief", ignore = true)
+    @Mapping(target = "parentId", source = "parentDepartment.id")
     DepartmentResponseDTO toDTO(DepartmentEntity entity);
 
     @AfterMapping
@@ -23,7 +24,7 @@ public interface DepartmentMapper {
         responseDTO.setChief(
                 Optional.ofNullable(entity)
                         .map(DepartmentEntity::getChief)
-                        .map(x -> new EmployeeResponseDTO(x.getId(), x.getName(), x.getEmail(), null, null))
+                        .map(x -> new EmployeeResponseDTO(x.getId(), x.getName(), x.getEmail(), null, null, null, null))
                         .orElse(null)
         );
     }

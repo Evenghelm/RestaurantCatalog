@@ -9,6 +9,8 @@ public interface EmployeeService {
 
     EmployeeResponseDTO getEmployeeById(Long id);
 
+    EmployeeResponseDTO getEmployeeById(Long id, boolean showDeleted);
+
     List<EmployeeResponseDTO> getEmployees();
 
     EmployeeResponseDTO createEmployee(EmployeeRequestDTO request);
